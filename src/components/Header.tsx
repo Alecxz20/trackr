@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header className="py-8 mx-8">
       <nav className="flex justify-between">
-        <p className="font-bold">TrackR</p>
+        <p className="font-bold"><Link href={'/'}>TrackR</Link></p>
         <ul className="flex gap-4">
           <li>
             <Link
