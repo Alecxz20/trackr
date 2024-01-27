@@ -14,32 +14,38 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Header from '@/components/Header'
+import { useRouter } from 'next/navigation'
+import { auth } from '../firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 
-const formSchema = z
-  .object({
-    username: z.string().min(3),
-    emailAdress: z.string().email(),
-    password: z.string().min(8),
-    passwordConfirm: z.string(),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.passwordConfirm
-    },
-    {
-      message: "Password don't match",
-      path: ['passwordConfirm'],
-    }
-  )
+const formSchema = z.object({
+  emailAddress: z.string().email(),
+  password: z.string().min(8),
+})
+
+type Data = {
+  emailAddress: string
+  password: string
+}
 
 export default function LogInPage() {
+  const router = useRouter()
+
+  async function login(values: Data) {
+    await signInWithEmailAndPassword(auth, values.emailAddress, values.password)
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
+      emailAddress: '',
+      password: '',
     },
   })
-  function handleSubmit() {}
+  async function handleSubmit(values: z.infer<typeof formSchema>) {
+    router.push('/')
+    await login(values)
+  }
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -51,7 +57,7 @@ export default function LogInPage() {
         >
           <FormField
             control={form.control}
-            name="emailAdress"
+            name="emailAddress"
             render={({ field }) => {
               return (
                 <FormItem>
