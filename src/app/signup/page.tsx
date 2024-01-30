@@ -16,7 +16,9 @@ import { Button } from '@/components/ui/button'
 import Header from '@/components/Header'
 import { useRouter } from 'next/navigation'
 import { auth } from '../firebase'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../firebase'
 
 const formSchema = z
   .object({
@@ -36,14 +38,27 @@ const formSchema = z
   )
 
 type Data = {
-  username: string,
-  emailAddress: string,
-  password: string,
+  username: string
+  emailAddress: string
+  password: string
   passwordConfirm: string
 }
 
-function signUp(values: Data) {
-  createUserWithEmailAndPassword(auth, values.emailAddress, values.password)
+async function signUp(values: Data) {
+  await createUserWithEmailAndPassword(
+    auth,
+    values.emailAddress,
+    values.password
+  )
+
+  await setDoc(
+    doc(db, 'users', `${auth.currentUser?.uid}`),
+    {
+      username: values.username,
+      email: values.emailAddress,
+    },
+    { merge: true }
+  )
 }
 
 export default function SignUpPage() {
@@ -81,6 +96,7 @@ export default function SignUpPage() {
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
+                      autoComplete="username"
                       type="text"
                       placeholder="Type your username"
                       {...field}
@@ -119,6 +135,7 @@ export default function SignUpPage() {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
+                      autoComplete="new-password"
                       type="password"
                       placeholder="Type your password"
                       {...field}
@@ -138,6 +155,7 @@ export default function SignUpPage() {
                   <FormLabel>Password Confirm</FormLabel>
                   <FormControl>
                     <Input
+                      autoComplete="new-password"
                       type="password"
                       placeholder="Repeat your password"
                       {...field}
