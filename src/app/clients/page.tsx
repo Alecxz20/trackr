@@ -1,10 +1,9 @@
 import Sidebar from '@/components/Sidebar'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
-import Dashboard from '@/components/Dashboard'
 
 export const metadata: Metadata = {
-  title: 'Dashboard | Trackr',
+  title: 'Clients | Trackr',
   description:
     'Manage, record and track the performance of your loans efficiently',
 }
@@ -12,9 +11,10 @@ export const metadata: Metadata = {
 export default function page() {
   return (
     <div className={cn('min-h-screen w-full flex')}>
+      {/* sidebar */}
       <Sidebar />
-
-      <Dashboard />
+      {/* main page */}
+      <div className="p-8 w-full">Clients</div>
     </div>
   )
 }
